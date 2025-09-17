@@ -142,7 +142,7 @@ static void select_filter_for_rate(struct data *data, int rate) {
     }
 
     data->current_rate = actual_rate;
-    printf("Selected FIR filter for rate=%d Hz (order=%d)\n", 
+    printf("Selected FIR filter for rate=%d Hz (order=%d)\n",
            data->current_rate, data->channels[0].current->order);
 }
 
@@ -189,11 +189,11 @@ static void on_filter_process(void *userdata, struct spa_io_position *position) 
     for (int ch = 0; ch < NUM_CHANNELS; ch++) {
         struct channel *channel = &data->channels[ch];
 
-        delay_line_append_samples(channel->current, channel->delay_line, 
-                                input_buffers[ch], n_samples);
+        delay_line_append_samples(channel->current, channel->delay_line,
+                                  input_buffers[ch], n_samples);
 
-        fir_filter_apply(channel->current, channel->delay_line, 
-                        n_samples, output_buffers[ch]);
+        fir_filter_apply(channel->current, channel->delay_line,
+                         n_samples, output_buffers[ch]);
     }
 }
 
@@ -242,26 +242,26 @@ static int create_channel_ports(struct data *data, int channel_idx) {
     struct channel *channel = &data->channels[channel_idx];
 
     channel->in_port = pw_filter_add_port(data->filter,
-                                         PW_DIRECTION_INPUT,
-                                         PW_FILTER_PORT_FLAG_MAP_BUFFERS,
-                                         PW_ID_ANY,
-                                         pw_properties_new(
-                                             PW_KEY_FORMAT_DSP, "32 bit float mono audio",
-                                             PW_KEY_PORT_NAME, config->input_name,
-                                             PW_KEY_AUDIO_CHANNEL, config->channel_name,
-                                             NULL),
-                                         NULL, 0);
-
-    channel->out_port = pw_filter_add_port(data->filter,
-                                          PW_DIRECTION_OUTPUT,
+                                          PW_DIRECTION_INPUT,
                                           PW_FILTER_PORT_FLAG_MAP_BUFFERS,
                                           PW_ID_ANY,
                                           pw_properties_new(
                                               PW_KEY_FORMAT_DSP, "32 bit float mono audio",
-                                              PW_KEY_PORT_NAME, config->output_name,
+                                              PW_KEY_PORT_NAME, config->input_name,
                                               PW_KEY_AUDIO_CHANNEL, config->channel_name,
                                               NULL),
                                           NULL, 0);
+
+    channel->out_port = pw_filter_add_port(data->filter,
+                                           PW_DIRECTION_OUTPUT,
+                                           PW_FILTER_PORT_FLAG_MAP_BUFFERS,
+                                           PW_ID_ANY,
+                                           pw_properties_new(
+                                               PW_KEY_FORMAT_DSP, "32 bit float mono audio",
+                                               PW_KEY_PORT_NAME, config->output_name,
+                                               PW_KEY_AUDIO_CHANNEL, config->channel_name,
+                                               NULL),
+                                           NULL, 0);
 
     if (!channel->in_port || !channel->out_port) {
         fprintf(stderr, "Failed to create ports for channel %d\n", channel_idx);

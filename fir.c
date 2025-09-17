@@ -10,8 +10,8 @@
 #define SIMD_WIDTH_AVX512 16
 #define OUTPUT_UNROLL_FACTOR 4
 
-static void fir_filter_apply_scalar(int len, const float *coeff, int count, 
-                                   const float *samples, float *output) {
+static void fir_filter_apply_scalar(int len, const float *coeff, int count,
+                                    const float *samples, float *output) {
     for (int i = 0; i < count; i++) {
         float sum = 0.0f;
         for (int j = 0; j < len; j++) {
@@ -21,7 +21,7 @@ static void fir_filter_apply_scalar(int len, const float *coeff, int count,
     }
 }
 
-static void fir_filter_apply_avx512(int len, const float *coeff, int count, 
+static void fir_filter_apply_avx512(int len, const float *coeff, int count,
                                     const float *samples, float *output) {
     const int vectorized_len = (len / SIMD_WIDTH_AVX512) * SIMD_WIDTH_AVX512;
     const int vectorized_count = (count / OUTPUT_UNROLL_FACTOR) * OUTPUT_UNROLL_FACTOR;
@@ -84,23 +84,23 @@ static void fir_filter_apply_avx512(int len, const float *coeff, int count,
     }
 }
 
-void fir_filter_apply(const struct fir_filter *filter, const struct delay_line *delay_line, 
-                     int count, float *output) {
+void fir_filter_apply(const struct fir_filter *filter, const struct delay_line *delay_line,
+                      int count, float *output) {
     if (!filter || !delay_line || !output || count <= 0) {
         return;
     }
 
     const float *samples = delay_line->buffer + delay_line->index - filter->order - count;
 
-#ifdef __AVX512F2__
+#ifdef __AVX512F__
     fir_filter_apply_avx512(filter->order, filter->coeffs, count, samples, output);
 #else
     fir_filter_apply_scalar(filter->order, filter->coeffs, count, samples, output);
 #endif
 }
 
-void delay_line_append_samples(const struct fir_filter *filter, struct delay_line *delay_line, 
-                              const float *samples, int count) {
+void delay_line_append_samples(const struct fir_filter *filter, struct delay_line *delay_line,
+                               const float *samples, int count) {
     if (!filter || !delay_line || !samples || count <= 0) {
         return;
     }
@@ -127,8 +127,8 @@ void delay_line_append_samples(const struct fir_filter *filter, struct delay_lin
 
 void fir_filter_free(const struct fir_filter *filter) {
     if (filter) {
-        free((void *)filter->coeffs);
-        free((void *)filter);
+        free((void *) filter->coeffs);
+        free((void *) filter);
     }
 }
 

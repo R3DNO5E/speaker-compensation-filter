@@ -17,15 +17,18 @@ struct delay_line {
 
 extern const struct fir_filter FIR_FILTERS[];
 
-void fir_filter_apply(const struct fir_filter *filter, const struct delay_line *delay_line, 
-                     int count, float *output);
+void fir_filter_apply(const struct fir_filter *filter, const struct delay_line *delay_line,
+                      int count, float *output);
 
-void delay_line_append_samples(const struct fir_filter *filter, struct delay_line *delay_line, 
-                              const float *samples, int count);
+void delay_line_append_samples(const struct fir_filter *filter, struct delay_line *delay_line,
+                               const float *samples, int count);
 
 void fir_filter_free(const struct fir_filter *filter);
+
 struct fir_filter *fir_filter_clone(const struct fir_filter *filter);
+
 struct delay_line *delay_line_init(size_t size);
+
 void delay_line_free(struct delay_line *delay_line);
 
 #endif
